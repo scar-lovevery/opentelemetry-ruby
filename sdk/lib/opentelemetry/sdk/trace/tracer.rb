@@ -36,21 +36,22 @@ module OpenTelemetry
         def start_span(name, with_parent: nil, attributes: nil, links: nil, start_timestamp: nil, kind: nil)
           name ||= 'empty'
 
-          with_parent ||= Context.current
-          parent_span_context = OpenTelemetry::Trace.current_span(with_parent).context
+          parent_context = with_parent || Context.current
+          parent_span = OpenTelemetry::Trace.current_span(parent_context)
+          parent_span_context = parent_span.context
           if parent_span_context.valid?
             parent_span_id = parent_span_context.span_id
             trace_id = parent_span_context.trace_id
           end
           trace_id ||= tracer_provider.id_generator.generate_trace_id
           sampler = tracer_provider.active_trace_config.sampler
-          result = sampler.should_sample?(trace_id: trace_id, parent_context: with_parent, links: links, name: name, kind: kind, attributes: attributes)
-          internal_create_span(result, name, kind, trace_id, parent_span_id, attributes, links, start_timestamp, with_parent)
+          result = sampler.should_sample?(trace_id: trace_id, parent_context: parent_context, links: links, name: name, kind: kind, attributes: attributes)
+          internal_create_span(result, name, kind, trace_id, parent_span_id, attributes, links, start_timestamp, parent_context, parent_span)
         end
 
         private
 
-        def internal_create_span(result, name, kind, trace_id, parent_span_id, attributes, links, start_timestamp, parent_context) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+        def internal_create_span(result, name, kind, trace_id, parent_span_id, attributes, links, start_timestamp, parent_context, parent_span) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
           span_id = tracer_provider.id_generator.generate_span_id
           if result.recording? && !tracer_provider.stopped?
             trace_flags = result.sampled? ? OpenTelemetry::Trace::TraceFlags::SAMPLED : OpenTelemetry::Trace::TraceFlags::DEFAULT
@@ -59,6 +60,7 @@ module OpenTelemetry
             Span.new(
               context,
               parent_context,
+              parent_span,
               name,
               kind,
               parent_span_id,
