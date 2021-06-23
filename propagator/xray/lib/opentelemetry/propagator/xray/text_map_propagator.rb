@@ -37,11 +37,16 @@ module OpenTelemetry
         # @return [Context] context updated with extracted baggage, or the original context
         #   if extraction fails
         def extract(carrier, context: Context.current, getter: Context::Propagation.text_map_getter)
+          OpenTelemetry.logger.debug "Hello in Propagator::XRay::TextMapPropagator#extract"
           header = getter.get(carrier, XRAY_CONTEXT_KEY)
+          OpenTelemetry.logger.debug "Hello in Propagator::XRay::TextMapPropagator#extract - after getter #{header}"
           return context unless header
 
           match = parse_header(header)
+          OpenTelemetry.logger.debug "Hello in Propagator::XRay::TextMapPropagator#extract - after parse_header #{match}"
           return context unless match
+
+          OpenTelemetry.logger.debug "Hello in Propagator::XRay::TextMapPropagator#extract - after return context"
 
           span_context = Trace::SpanContext.new(
             trace_id: to_trace_id(match['trace_id']),
@@ -50,10 +55,12 @@ module OpenTelemetry
             tracestate: to_trace_state(match['trace_state']),
             remote: true
           )
+          OpenTelemetry.logger.debug "Hello in Propagator::XRay::TextMapPropagator#extract - span_context #{span_context} trace_id:#{span_context.hex_trace_id} span_id:#{span_context.hex_span_id}"
 
           span = OpenTelemetry::Trace.non_recording_span(span_context)
           context = XRay.context_with_debug(context) if match['sampling_state'] == 'd'
           Trace.context_with_span(span, parent_context: context)
+          OpenTelemetry.logger.debug "Hello in Propagator::XRay::TextMapPropagator#extract - end"
         rescue OpenTelemetry::Error
           context
         end
@@ -66,8 +73,11 @@ module OpenTelemetry
         #   will be used to write context into the carrier, otherwise the default
         #   text map setter will be used.
         def inject(carrier, context: Context.current, setter: Context::Propagation.text_map_setter)
+          OpenTelemetry.logger.debug "Hello in Propagator::XRay::TextMapPropagator#inject"
           span_context = Trace.current_span(context).context
+          OpenTelemetry.logger.debug "Hello in Propagator::XRay::TextMapPropagator#inject - after span_context"
           return unless span_context.valid?
+          OpenTelemetry.logger.debug "Hello in Propagator::XRay::TextMapPropagator#inject - return unless span_context.valid"
 
           sampling_state = if XRay.debug?(context)
                              'd'
@@ -76,14 +86,17 @@ module OpenTelemetry
                            else
                              '0'
                            end
+          OpenTelemetry.logger.debug "Hello in Propagator::XRay::TextMapPropagator#inject - sampling_state #{sampling_state}"
 
           ot_trace_id = span_context.hex_trace_id
           xray_trace_id = "1-#{ot_trace_id[0..7]}-#{ot_trace_id[8..ot_trace_id.length]}"
           parent_id = span_context.hex_span_id
 
           xray_value = "Root=#{xray_trace_id};Parent=#{parent_id};Sampled=#{sampling_state}"
+          OpenTelemetry.logger.debug "Hello in Propagator::XRay::TextMapPropagator#inject xray_value = #{xray_value}"
 
           setter.set(carrier, XRAY_CONTEXT_KEY, xray_value)
+          OpenTelemetry.logger.debug "Hello in Propagator::XRay::TextMapPropagator#inject - after setter #{XRAY_CONTEXT_KEY}"
           nil
         end
 

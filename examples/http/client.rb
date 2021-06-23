@@ -9,9 +9,12 @@ require 'bundler/setup'
 require 'faraday'
 # Require otel-ruby
 require 'opentelemetry/sdk'
+require 'opentelemetry/propagator/xray'
 
 # Export traces to console by default
 ENV['OTEL_TRACES_EXPORTER'] ||= 'console'
+ENV['OTEL_PROPAGATORS'] ||= 'xray'
+ENV['OTEL_LOG_LEVEL'] ||= 'debug'
 
 # Allow setting the host from the ENV
 host = ENV.fetch('HTTP_EXAMPLE_HOST', '0.0.0.0')
@@ -39,6 +42,7 @@ tracer.in_span(
 ) do |span|
   response = connection.get(url) do |request|
     # Inject context into request headers
+    # SCAR - DEFINITELY BREAKS IF NOT THIS LINE
     OpenTelemetry.propagation.inject(request.headers)
   end
 

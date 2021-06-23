@@ -41,3 +41,9 @@ The `opentelemetry-propagator-xray` gem is distributed under the Apache 2.0 lice
 [community-meetings]: https://github.com/open-telemetry/community#community-meetings
 [discussions-url]: https://github.com/open-telemetry/opentelemetry-ruby/discussions
 [aws-xray]: https://docs.aws.amazon.com/xray/latest/devguide/aws-xray.html
+
+
+
+
+Scar notes:
+gem push --key github --host https://rubygems.pkg.github.com/scar-lovevery opentelemetry-propagator-xray-0.18.1.gem

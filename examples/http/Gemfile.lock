@@ -1,20 +1,42 @@
 PATH
   remote: ../../api
   specs:
-    opentelemetry-api (0.16.0)
+    opentelemetry-api (1.0.0.rc1)
 
 PATH
   remote: ../../common
   specs:
-    opentelemetry-common (0.16.0)
-      opentelemetry-api (~> 0.16.0)
+    opentelemetry-common (0.18.0)
+      opentelemetry-api (~> 1.0.0.rc1)
+
+PATH
+  remote: ../../instrumentation/faraday
+  specs:
+    opentelemetry-instrumentation-faraday (0.18.1)
+      opentelemetry-api (~> 1.0.0.rc1)
+      opentelemetry-common (~> 0.18.0)
+      opentelemetry-instrumentation-base (~> 0.18.0)
+
+PATH
+  remote: ../../instrumentation/sinatra
+  specs:
+    opentelemetry-instrumentation-sinatra (0.18.0)
+      opentelemetry-api (~> 1.0.0.rc1)
+      opentelemetry-instrumentation-base (~> 0.18.0)
+
+PATH
+  remote: ../../propagator/xray
+  specs:
+    opentelemetry-propagator-xray (0.18.2)
+      opentelemetry-api (~> 1.0.0.rc1)
 
 PATH
   remote: ../../sdk
   specs:
-    opentelemetry-sdk (0.16.0)
-      opentelemetry-api (~> 0.16.0)
-      opentelemetry-common (~> 0.16.0)
+    opentelemetry-sdk (1.0.0.rc1)
+      opentelemetry-api (~> 1.0.0.rc1)
+      opentelemetry-common (~> 0.18.0)
+      opentelemetry-instrumentation-base (~> 0.18.0)
 
 GEM
   remote: https://rubygems.org/
@@ -23,6 +45,8 @@ GEM
       multipart-post (>= 1.2, < 3)
     multipart-post (2.1.1)
     mustermann (1.0.3)
+    opentelemetry-instrumentation-base (0.18.0)
+      opentelemetry-api (~> 1.0.0.rc1)
     rack (2.2.3)
     rack-protection (2.0.7)
       rack
@@ -40,8 +64,11 @@ DEPENDENCIES
   faraday (~> 0.16.1)
   opentelemetry-api!
   opentelemetry-common!
+  opentelemetry-instrumentation-faraday!
+  opentelemetry-instrumentation-sinatra!
+  opentelemetry-propagator-xray!
   opentelemetry-sdk!
   sinatra (~> 2.0)
 
 BUNDLED WITH
-   2.2.15
+   1.17.2

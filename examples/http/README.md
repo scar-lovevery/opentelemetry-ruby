@@ -18,3 +18,14 @@ This is a simple example that demonstrates tracing an HTTP request from client t
 	* `./client.rb`
 1. You should see console exporter output for both the client and server sessions.
 
+
+
+#running the tests for xtray(might not have needed the GEM_HOME):
+GEM_HOME=/Users/scar/workspace/repos/3rdparty/opentelemetry-ruby/propagator/xray/vendor/bundle/ bundle exec rake
+
+
+EXAMPLE FROM AWS:
+1-5960082b-ab52431b496add878434aa25
+1-594aed87-ad72e26896b3f9d3a27054bb
+EXAMPLE GENERATED:
+1-70b1b44d-b3bffd2bbc0c70323d231355
