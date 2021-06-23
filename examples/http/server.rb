@@ -10,9 +10,12 @@ require 'bundler/setup'
 require 'sinatra/base'
 # Require otel-ruby
 require 'opentelemetry/sdk'
+require 'opentelemetry/propagator/xray'
 
 # Export traces to console by default
 ENV['OTEL_TRACES_EXPORTER'] ||= 'console'
+ENV['OTEL_PROPAGATORS'] ||= 'xray'
+ENV['OTEL_LOG_LEVEL'] ||= 'debug'
 
 # configure SDK with defaults
 OpenTelemetry::SDK.configure
